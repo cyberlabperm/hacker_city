@@ -1,0 +1,17 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+<script src="{% static 'js/JQuery.js' %}"></script>
+
+<div id='main'>
+    <div id='right_column'>
+        {% block auth %}
+        {% endblock %}
+    </div>
+
+    <div id='left_column'>
+        <div id='console'>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</div>

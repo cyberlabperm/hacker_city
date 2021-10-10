@@ -1,0 +1,80 @@
+{% extends 'index.html' %}
+
+{% block auth %}
+<span id='title'>{{ username }}</span>
+<form id='form' method='POST' class='form-group'>
+    {% csrf_token %}
+    <p><button id='logout' type='submit' class='btn btn-success'>LogOut</button></p>
+</form>
+
+<script>
+    $(document).on('submit', '#form', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'/logout_view/',
+            data:{
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(response) {
+                window.location.reload(true);
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div id='game_data'>
+    <span class='console_text'>
+    Игра Blue vs Red<br>
+            Суть игры заключается в следующем:<br>
+            1) Вы руководите отделом информационной безопасности<br>
+            2) В любой момент времени вас могут начать атаковать хакеры\<br>
+            3) Хакеры могут выжидать накапливая ресурсы для атаки<br>
+            4) У вас есть выбор - либо потратить ресурсы на СЗИ, либо сохранить ресурсы<br>
+            5) Атака считается успешной, если хакеры располагают большими ресурсами, чем было вложено в СЗИ<br>
+            6) Если вы тратите на ИБ больше 20% бюджета совет директоров впадает в ярость и вас увольняют!<br>
+      Игра начинается!<br>
+      Бюджет вашей компании равен {{company_income}} из них на ИБ тратится {{company_security}}<br>
+      1) Потратить дополнительные ресурсы (2) на закупку СЗИ<br>
+      2) Ничего не делать<br>
+      3) Потратить (1) на проведение мониторинга и расследования активности хакеров (1)
+      <br>
+      <br>
+    </span>
+</div>
+<div id='console_input'>
+    <form id='game_action' method='POST' class='form-group'>
+        <input id='input_field' />
+    </form>
+</div>
+
+<script>
+    $(document).on('submit', '#game_action', function(e) {
+        var span = $('<span>', {class: "console_text"});
+        span.append($('#input_field').val());
+        $('#game_data').append(span)
+        span.append('<br>');
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'/game_action/',
+            data:{
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+                action:$('#input_field').val(),
+            },
+            success:function(response) {
+                var parse = JSON.parse(response)
+                for (var item of parse) {
+                    var span = $('<span>', {class: "console_text"});
+                    span.append(item);
+                    span.append('<br>');
+                    $('#game_data').append(span)
+                };
+                $('#input_field').val('');
+            }
+        });
+    });
+</script>
+{% endblock %}

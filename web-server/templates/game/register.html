@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+
+{% block auth %}
+<form id='form' method='POST' class='form-group'>
+    {% csrf_token %}
+    <p>username</p>
+    <p><input id='username' /></p>
+    <p>password</p>
+    <p><input id='password' /></p>
+    <p>confirm password</p>
+    <p><input id='password2' /></p>
+    <button type='submit' class='btn btn-success'>LogIn</button>
+</form>
+
+<script>
+    $(document).on('submit', '#form', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'/create_user/',
+            data:{
+                username:$('#username').val(),
+                password:$('#password').val(),
+                password2:$('#password2').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+            },
+            success:function(response) {
+                var parse = JSON.parse(response)
+                if(parse[0] == -1) {
+                    alert(parse[1]);
+                }
+                else {
+                    alert(parse[1]);
+                    window.location.href = '../';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
